@@ -15,7 +15,7 @@
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react-jsx",
+    "jsx": "preserve",
     "incremental": true,
     "strictNullChecks": false,
     "noImplicitAny": false,
@@ -27,19 +27,22 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@app/*": [
+        "./app/*"
       ]
     }
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx",
+    "app/**/*.ts",
+    "app/**/*.tsx",
+    "src/**/*.ts",
+    "src/**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
   "exclude": [
-    "node_modules",
-    "_vite_legacy",
-    "src/_legacy"
+    "node_modules"
   ]
 }
