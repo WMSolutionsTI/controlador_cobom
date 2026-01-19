@@ -1,8 +1,3 @@
-version: '3.8'
-
-# Simplified Docker Compose for local development
-# This version includes only PostgreSQL and PostgREST for a minimal Supabase setup
-
 services:
   # PostgreSQL Database
   postgres:
