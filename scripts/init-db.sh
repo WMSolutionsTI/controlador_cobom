@@ -32,7 +32,7 @@ if [ -z "$DB_PASSWORD" ]; then
     echo "  ./scripts/init-db.sh"
     echo ""
     echo "Or generate a secure password:"
-    echo "  export DB_PASSWORD=\$(openssl rand -base64 24)"
+    echo "  export DB_PASSWORD=\\$(openssl rand -base64 24)"
     echo ""
     exit 1
 fi

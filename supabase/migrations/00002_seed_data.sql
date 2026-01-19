@@ -43,6 +43,7 @@ INSERT INTO viaturas (id, prefixo, estacao_id, modalidade_id, status, dejem) VAL
     ('vvvv5555-5555-5555-5555-555555555555', 'ABT-02', 'eeee3333-3333-3333-3333-333333333333', 'mmmm1111-1111-1111-1111-111111111111', 'Available', false);
 
 -- Insert some sample observations
+-- Note: Using past date 2025-12-15 which is realistic as of 2026-01-19
 INSERT INTO observacoes_viatura (viatura_id, observacao, criado_por) VALUES
     ('vvvv1111-1111-1111-1111-111111111111', 'Viatura em condições operacionais normais', 'Sistema'),
     ('vvvv2222-2222-2222-2222-222222222222', 'Última manutenção realizada em 2025-12-15', 'Sistema');
