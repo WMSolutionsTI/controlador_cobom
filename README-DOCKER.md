@@ -29,6 +29,9 @@ This guide explains how to run Controlador COBOM using Docker with a self-hosted
 git clone https://github.com/WMSolutionsTI/controlador_cobom.git
 cd controlador_cobom
 
+# Install dependencies first (required for Docker build)
+npm install --legacy-peer-deps
+
 # Copy environment file
 cp .env.example .env
 
@@ -36,7 +39,16 @@ cp .env.example .env
 nano .env
 ```
 
-### 2. Start the Full Stack
+### 2. Build the Application
+
+```bash
+# Build the Docker image
+docker build -t controlador-cobom .
+```
+
+**Note**: The Dockerfile copies the local `node_modules` directory to avoid npm networking issues during Docker build. Make sure to run `npm install --legacy-peer-deps` before building the Docker image.
+
+### 3. Start the Full Stack
 
 ```bash
 # Start all services (Next.js + Full Supabase)
@@ -191,6 +203,9 @@ docker-compose -f docker-compose.simple.yml up -d
 ### Option 3: Build and Run Separately
 
 ```bash
+# Install dependencies first (required for Docker build)
+npm install --legacy-peer-deps
+
 # Build the application image
 docker build -t controlador-cobom .
 

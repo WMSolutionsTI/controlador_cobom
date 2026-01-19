@@ -7,18 +7,16 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies with legacy peer deps to handle React 19
-RUN npm ci --legacy-peer-deps --only=production
+# Note: Dependencies installation handled locally before Docker build
+# This approach avoids npm networking issues in Docker build environment
 
 # Stage 2: Build the application
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy package files
+# Copy package files and node_modules from host
 COPY package*.json ./
-
-# Install all dependencies including devDependencies
-RUN npm ci --legacy-peer-deps
+COPY node_modules ./node_modules
 
 # Copy source files
 COPY . .

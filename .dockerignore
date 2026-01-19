@@ -1,5 +1,5 @@
-# Dependencies
-node_modules
+# Dependencies (commented out - we need node_modules for build)
+# node_modules
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
