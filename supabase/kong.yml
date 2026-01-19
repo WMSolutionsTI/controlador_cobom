@@ -1,0 +1,54 @@
+_format_version: "2.1"
+
+services:
+  - name: rest
+    url: http://supabase-rest:3000
+    routes:
+      - name: rest-route
+        paths:
+          - /rest/v1/
+        strip_path: false
+
+  - name: auth
+    url: http://supabase-auth:9999
+    routes:
+      - name: auth-route
+        paths:
+          - /auth/v1/
+        strip_path: false
+
+  - name: storage
+    url: http://supabase-storage:5000
+    routes:
+      - name: storage-route
+        paths:
+          - /storage/v1/
+        strip_path: false
+
+plugins:
+  - name: cors
+    config:
+      origins:
+        - "*"  # WARNING: Allows all origins - CHANGE THIS IN PRODUCTION!
+                # Production: Use specific domains ["https://yourdomain.com"]
+                # When using wildcard with credentials, you're vulnerable to CSRF attacks
+                # Consider: Set credentials to false OR restrict origins to specific domains
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Accept-Language
+        - Content-Language
+        - Content-Type
+        - Authorization
+        - apikey
+      exposed_headers:
+        - X-Total-Count
+      credentials: true  # WARNING: Credentials + wildcard origins = security risk!
+                        # Production: Set to false OR use specific origins above
+      max_age: 3600

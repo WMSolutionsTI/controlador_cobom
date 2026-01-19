@@ -1,0 +1,163 @@
+services:
+  # PostgreSQL Database (Supabase)
+  supabase-db:
+    image: supabase/postgres:15.1.0.147
+    container_name: supabase-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+    volumes:
+      - supabase-db-data:/var/lib/postgresql/data
+      - ./supabase/migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - supabase-network
+
+  # PostgREST - RESTful API for PostgreSQL
+  supabase-rest:
+    image: postgrest/postgrest:v12.0.2
+    container_name: supabase-rest
+    ports:
+      - "3000:3000"
+    environment:
+      PGRST_DB_URI: postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      PGRST_DB_SCHEMAS: public
+      PGRST_DB_ANON_ROLE: anon
+      PGRST_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters}
+      PGRST_DB_USE_LEGACY_GUCS: "false"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - supabase-network
+
+  # GoTrue - Authentication Service
+  supabase-auth:
+    image: supabase/gotrue:v2.132.3
+    container_name: supabase-auth
+    ports:
+      - "9999:9999"
+    environment:
+      GOTRUE_API_HOST: 0.0.0.0
+      GOTRUE_API_PORT: 9999
+      GOTRUE_DB_DRIVER: postgres
+      GOTRUE_DB_DATABASE_URL: postgres://postgres:${POSTGRES_PASSWORD:-your-super-secret-password}@supabase-db:5432/postgres
+      GOTRUE_SITE_URL: ${SITE_URL:-http://localhost:8080}
+      GOTRUE_URI_ALLOW_LIST: "*"
+      GOTRUE_JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-token-with-at-least-32-characters}
+      GOTRUE_JWT_EXP: 3600
+      GOTRUE_DISABLE_SIGNUP: "false"
+      GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+      GOTRUE_MAILER_AUTOCONFIRM: "true"
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - supabase-network
+
+  # Kong API Gateway
+  supabase-kong:
+    image: kong:2.8.1
+    container_name: supabase-kong
+    ports:
+      - "8000:8000"
+      - "8443:8443"
+    environment:
+      KONG_DATABASE: "off"
+      KONG_DECLARATIVE_CONFIG: /var/lib/kong/kong.yml
+      KONG_DNS_ORDER: LAST,A,CNAME
+      KONG_PLUGINS: request-transformer,cors,key-auth,acl
+    volumes:
+      - ./supabase/kong.yml:/var/lib/kong/kong.yml:ro
+    depends_on:
+      - supabase-rest
+      - supabase-auth
+    restart: unless-stopped
+    networks:
+      - supabase-network
+
+  # Postgres Meta - Database management
+  supabase-meta:
+    image: supabase/postgres-meta:v0.75.0
+    container_name: supabase-meta
+    ports:
+      - "8081:8080"
+    environment:
+      PG_META_PORT: 8080
+      PG_META_DB_HOST: supabase-db
+      PG_META_DB_PORT: 5432
+      PG_META_DB_NAME: postgres
+      PG_META_DB_USER: postgres
+      PG_META_DB_PASSWORD: ${POSTGRES_PASSWORD:-your-super-secret-password}
+    depends_on:
+      supabase-db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - supabase-network
+
+  # Supabase Studio - Web UI for database management
+  supabase-studio:
+    image: supabase/studio:20240101
+    container_name: supabase-studio
+    ports:
+      - "54323:3000"
+    environment:
+      STUDIO_PG_META_URL: http://supabase-meta:8080
+      SUPABASE_URL: http://supabase-kong:8000
+      SUPABASE_REST_URL: http://supabase-kong:8000/rest/v1/
+      # Default development JWT tokens - expires 2028-07-15 (timestamp: 1847622400)
+      # WARNING: These are for LOCAL DEVELOPMENT ONLY - Generate new tokens for production!
+      # Note: anon and service_role tokens have DIFFERENT payloads (role claim differs)
+      SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk4NTYwMDAsImV4cCI6MTg0NzYyMjQwMH0.qZHQGehphHWQH-Y8WPLGsHvNvHQhsYY4K8Yh_YmP0nI}
+      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY2FsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4OTg1NjAwMCwiZXhwIjoxODQ3NjIyNDAwfQ.qZHQGehphHWQH-Y8WPLGsHvNvHQhsYY4K8Yh_YmP0nI}
+    depends_on:
+      - supabase-kong
+      - supabase-meta
+    restart: unless-stopped
+    networks:
+      - supabase-network
+
+  # Next.js Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: controlador-cobom-app
+    ports:
+      - "8080:8080"
+    environment:
+      # Supabase Configuration
+      # NOTE: Default uses localhost for browser compatibility (client-side requests)
+      # The Next.js server running in the container can still reach Kong via Docker network
+      # Override with service name if running server-side operations: http://supabase-kong:8000
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:8000}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk4NTYwMDAsImV4cCI6MTg0NzYyMjQwMH0.qZHQGehphHWQH-Y8WPLGsHvNvHQhsYY4K8Yh_YmP0nI}
+      # Application Configuration
+      NODE_ENV: production
+      PORT: 8080
+      HOSTNAME: "0.0.0.0"
+    depends_on:
+      - supabase-kong
+    restart: unless-stopped
+    networks:
+      - supabase-network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  supabase-db-data:
+    driver: local
+
+networks:
+  supabase-network:
+    driver: bridge
