@@ -45,7 +45,7 @@ INSERT INTO viaturas (id, prefixo, estacao_id, modalidade_id, status, dejem) VAL
 -- Insert some sample observations
 INSERT INTO observacoes_viatura (viatura_id, observacao, criado_por) VALUES
     ('vvvv1111-1111-1111-1111-111111111111', 'Viatura em condições operacionais normais', 'Sistema'),
-    ('vvvv2222-2222-2222-2222-222222222222', 'Última manutenção realizada em 2026-01-19', 'Sistema');
+    ('vvvv2222-2222-2222-2222-222222222222', 'Última manutenção realizada em 2025-12-15', 'Sistema');
 
 -- Insert sample activity log
 INSERT INTO logs_atividade (acao, detalhes, grupamento_id) VALUES

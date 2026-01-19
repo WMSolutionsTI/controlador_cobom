@@ -134,8 +134,10 @@ services:
       - "8080:8080"
     environment:
       # Supabase Configuration
-      # Using service name for internal Docker network communication
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://supabase-kong:8000}
+      # NOTE: Default uses localhost for browser compatibility (client-side requests)
+      # The Next.js server running in the container can still reach Kong via Docker network
+      # Override with service name if running server-side operations: http://supabase-kong:8000
+      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:-http://localhost:8000}
       NEXT_PUBLIC_SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk4NTYwMDAsImV4cCI6MTg0NzYyMjQwMH0.qZHQGehphHWQH-Y8WPLGsHvNvHQhsYY4K8Yh_YmP0nI}
       # Application Configuration
       NODE_ENV: production

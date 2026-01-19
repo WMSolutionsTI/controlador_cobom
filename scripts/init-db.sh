@@ -14,8 +14,22 @@ DB_HOST="${DB_HOST:-localhost}"
 DB_PORT="${DB_PORT:-5432}"
 DB_NAME="${DB_NAME:-postgres}"
 DB_USER="${DB_USER:-postgres}"
-# WARNING: Default password is insecure - always set DB_PASSWORD environment variable in production!
-DB_PASSWORD="${DB_PASSWORD:-your-super-secret-password}"
+
+# Password handling with security check
+if [ -z "$DB_PASSWORD" ]; then
+    echo -e "${RED}✗ ERROR: DB_PASSWORD environment variable is not set!${NC}"
+    echo ""
+    echo "For security reasons, you must explicitly set the database password."
+    echo "Please set DB_PASSWORD environment variable and try again:"
+    echo ""
+    echo "  export DB_PASSWORD='your-secure-password'"
+    echo "  ./scripts/init-db.sh"
+    echo ""
+    echo "Or generate a secure password:"
+    echo "  export DB_PASSWORD=\$(openssl rand -base64 24)"
+    echo ""
+    exit 1
+fi
 
 # Color output
 RED='\033[0;31m'
