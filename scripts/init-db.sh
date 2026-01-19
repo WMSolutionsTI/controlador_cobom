@@ -5,6 +5,12 @@
 
 set -e
 
+# Color output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
 echo "================================================"
 echo "Controlador COBOM - Database Initialization"
 echo "================================================"
@@ -30,12 +36,6 @@ if [ -z "$DB_PASSWORD" ]; then
     echo ""
     exit 1
 fi
-
-# Color output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
 
 echo -e "${YELLOW}Checking database connection...${NC}"
 

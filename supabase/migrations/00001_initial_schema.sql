@@ -6,10 +6,13 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- Create enums
--- vehicle_category: Reserved for future use to categorize vehicle types beyond modalidades
---                   TODO: Consider adding a 'categoria' column to modalidades_viatura table
---                   or linking vehicles to both modalidade (operational type) and categoria (vehicle class)
---                   This matches the type definitions in src/integrations/supabase/types.ts
+-- Note: These enums match the type definitions in src/integrations/supabase/types.ts
+-- 
+-- vehicle_category: Reserved for future categorization of vehicle types
+--                   Currently defined but not yet applied to any table column
+--                   Kept for schema consistency with TypeScript types and future implementation
+--                   TODO: Add 'categoria' column to modalidades_viatura or viaturas table
+-- 
 -- vehicle_status: Applied to viaturas.status column for operational state tracking
 CREATE TYPE vehicle_category AS ENUM ('Engine', 'Ladder', 'Rescue', 'Ambulance', 'Chief', 'Utility');
 CREATE TYPE vehicle_status AS ENUM ('Available', 'En Route', 'On Scene', 'En Route to Hospital', 'Returning to Base');

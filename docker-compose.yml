@@ -115,6 +115,8 @@ services:
       STUDIO_PG_META_URL: http://supabase-meta:8080
       SUPABASE_URL: http://supabase-kong:8000
       SUPABASE_REST_URL: http://supabase-kong:8000/rest/v1/
+      # Default development JWT tokens - expires 2028-07-15 (timestamp: 1847622400)
+      # WARNING: These are for LOCAL DEVELOPMENT ONLY - Generate new tokens for production!
       SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY2FsIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODk4NTYwMDAsImV4cCI6MTg0NzYyMjQwMH0.qZHQGehphHWQH-Y8WPLGsHvNvHQhsYY4K8Yh_YmP0nI}
       SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxvY2FsIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTY4OTg1NjAwMCwiZXhwIjoxODQ3NjIyNDAwfQ.qZHQGehphHWQH-Y8WPLGsHvNvHQhsYY4K8Yh_YmP0nI}
     depends_on:

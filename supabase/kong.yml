@@ -30,7 +30,9 @@ plugins:
     config:
       origins:
         - "*"  # WARNING: Allows all origins - CHANGE THIS IN PRODUCTION!
-                # Production example: ["https://yourdomain.com", "https://app.yourdomain.com"]
+                # Production: Use specific domains ["https://yourdomain.com"]
+                # When using wildcard with credentials, you're vulnerable to CSRF attacks
+                # Consider: Set credentials to false OR restrict origins to specific domains
       methods:
         - GET
         - POST
@@ -47,5 +49,6 @@ plugins:
         - apikey
       exposed_headers:
         - X-Total-Count
-      credentials: true
+      credentials: true  # WARNING: Credentials + wildcard origins = security risk!
+                        # Production: Set to false OR use specific origins above
       max_age: 3600
