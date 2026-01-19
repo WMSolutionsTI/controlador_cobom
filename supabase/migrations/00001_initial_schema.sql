@@ -6,6 +6,8 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
 -- Create enums
+-- vehicle_category: Defined for potential future use (currently not applied to any table)
+-- vehicle_status: Applied to viaturas.status column
 CREATE TYPE vehicle_category AS ENUM ('Engine', 'Ladder', 'Rescue', 'Ambulance', 'Chief', 'Utility');
 CREATE TYPE vehicle_status AS ENUM ('Available', 'En Route', 'On Scene', 'En Route to Hospital', 'Returning to Base');
 
@@ -60,7 +62,7 @@ CREATE TABLE viaturas (
     prefixo TEXT NOT NULL,
     estacao_id UUID NOT NULL REFERENCES estacoes(id) ON DELETE CASCADE,
     modalidade_id UUID NOT NULL REFERENCES modalidades_viatura(id) ON DELETE RESTRICT,
-    status TEXT DEFAULT 'Available',
+    status vehicle_status DEFAULT 'Available',
     dejem BOOLEAN DEFAULT FALSE,
     qsa_radio INTEGER,
     qsa_zello INTEGER,
