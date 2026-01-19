@@ -29,7 +29,8 @@ plugins:
   - name: cors
     config:
       origins:
-        - "*"
+        - "*"  # WARNING: Allows all origins - CHANGE THIS IN PRODUCTION!
+                # Production example: ["https://yourdomain.com", "https://app.yourdomain.com"]
       methods:
         - GET
         - POST

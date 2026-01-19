@@ -14,6 +14,7 @@ DB_HOST="${DB_HOST:-localhost}"
 DB_PORT="${DB_PORT:-5432}"
 DB_NAME="${DB_NAME:-postgres}"
 DB_USER="${DB_USER:-postgres}"
+# WARNING: Default password is insecure - always set DB_PASSWORD environment variable in production!
 DB_PASSWORD="${DB_PASSWORD:-your-super-secret-password}"
 
 # Color output
