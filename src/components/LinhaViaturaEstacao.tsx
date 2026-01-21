@@ -41,9 +41,9 @@ interface LinhaViaturaEstacaoProps {
 export const LinhaViaturaEstacao = ({ 
   estacao, 
   viaturas, 
-  aoClicarViatura, 
+  aoClicarViatura,
   aoClicarEstacao,
-  aoAtualizarStatus, 
+  aoAtualizarStatus,
   observacoesViaturas 
 }: LinhaViaturaEstacaoProps) => {
   // Simular dados de equipe (em uma implementação real, viriam do banco de dados)

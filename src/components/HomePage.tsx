@@ -350,8 +350,8 @@ const Index = () => {
         </div>
       )}
 
-      <div className="w-full px-2 sm:px-4 lg:px-6 py-2 space-y-2 pt-28 sm:pt-30 lg:pt-32">
-        <div className="max-w-[1400px] mx-auto">
+      <div className="w-full px-4 sm:px-4 lg:px-6 py-2 space-y-2 pt-28 sm:pt-30 lg:pt-12">
+        <div className="max-w-[1500px] mx-auto">
           <AnotacoesServicoDaily 
             grupamentoSelecionado={grupamentoSelecionado} 
             controladorSelecionado={controladorSelecionado}
