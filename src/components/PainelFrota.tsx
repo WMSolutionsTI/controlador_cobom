@@ -440,7 +440,7 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
                 {dadosAgrupados[subgrupamentoId].nome}
               </CardTitle>
             </CardHeader>
-            <CardContent className="p-3"
+            <CardContent className="p-4"
                           style={{
                             background: 'linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%)'
                           }}>

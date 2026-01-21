@@ -350,20 +350,22 @@ const Index = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-0 py-0 space-y-1 pt-1 sm:pt-20 lg:pt-12">
-        <AnotacoesServicoDaily 
-          grupamentoSelecionado={grupamentoSelecionado} 
-          controladorSelecionado={controladorSelecionado}
-          corProntidao={corProntidao}
-          key={`anotacoes-${refreshKey}`}
-        />
-        <PainelFrota 
-          grupamentoSelecionado={grupamentoSelecionado} 
-          controladorSelecionado={controladorSelecionado}
-          termoPesquisa={termoPesquisa}
-          key={`frota-${refreshKey}`}
-          bloqueado={!controladorSelecionado}
-        />
+      <div className="w-full px-2 sm:px-4 lg:px-6 py-2 space-y-2 pt-28 sm:pt-30 lg:pt-32">
+        <div className="max-w-[1400px] mx-auto">
+          <AnotacoesServicoDaily 
+            grupamentoSelecionado={grupamentoSelecionado} 
+            controladorSelecionado={controladorSelecionado}
+            corProntidao={corProntidao}
+            key={`anotacoes-${refreshKey}`}
+          />
+          <PainelFrota 
+            grupamentoSelecionado={grupamentoSelecionado} 
+            controladorSelecionado={controladorSelecionado}
+            termoPesquisa={termoPesquisa}
+            key={`frota-${refreshKey}`}
+            bloqueado={!controladorSelecionado}
+          />
+        </div>
       </div>
 
       {mostrarAdicionarViatura && (

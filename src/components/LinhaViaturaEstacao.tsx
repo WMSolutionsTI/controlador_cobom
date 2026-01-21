@@ -133,7 +133,7 @@ export const LinhaViaturaEstacao = ({
 
       <div className="flex-1">
         {viaturas.length > 0 ? (
-          <div className="flex flex-wrap gap-1">
+          <div className="flex flex-wrap gap-2">
             {viaturas.map((viatura) => (
               <ItemViatura
                 key={viatura.id}

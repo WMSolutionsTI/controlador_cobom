@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Trash2, Edit, Radio, Smartphone } from 'lucide-react';
+import { Trash2, Edit, Radio, Smartphone, User, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -46,11 +46,13 @@ export const VehicleDetailModal = ({
   const [qsaRadio, setQsaRadio] = useState<number | null>(null);
   const [qsaZello, setQsaZello] = useState<number | null>(null);
   const [isDejem, setIsDejem] = useState(false);
+  const [integrantesEquipe, setIntegrantesEquipe] = useState<any[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
     carregarObservacoes();
     carregarDadosViatura();
+    carregarIntegrantesEquipe();
   }, [vehicle.id]);
 
   const carregarDadosViatura = async () => {
@@ -68,6 +70,22 @@ export const VehicleDetailModal = ({
       setIsDejem(data.dejem || false);
     } catch (error) {
       console.error('Erro ao carregar dados da viatura:', error);
+    }
+  };
+
+  const carregarIntegrantesEquipe = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('integrantes_equipe')
+        .select('*')
+        .eq('viatura_id', vehicle.id)
+        .eq('ativo', true)
+        .order('ordem', { ascending: true });
+
+      if (error) throw error;
+      setIntegrantesEquipe(data || []);
+    } catch (error) {
+      console.error('Erro ao carregar integrantes da equipe:', error);
     }
   };
 
@@ -404,6 +422,91 @@ export const VehicleDetailModal = ({
                 </div>
               </div>
             </div>
+          </div>
+
+          <Separator />
+
+          {/* Seção de Integrantes da Equipe */}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="font-medium flex items-center gap-2">
+                <User className="w-4 h-4" />
+                Integrantes da Equipe
+              </h4>
+              {integrantesEquipe.length > 0 && (
+                <Badge variant="secondary" className="text-xs">
+                  {integrantesEquipe.length} {integrantesEquipe.length === 1 ? 'membro' : 'membros'}
+                </Badge>
+              )}
+            </div>
+
+            {integrantesEquipe.length > 0 ? (
+              <div className="space-y-2 max-h-60 overflow-y-auto">
+                {integrantesEquipe.map((integrante, index) => (
+                  <div 
+                    key={integrante.id} 
+                    className="bg-gradient-to-r from-blue-50 to-blue-100 p-3 rounded-lg border border-blue-200 shadow-sm hover:shadow-md transition-shadow"
+                  >
+                    {/* Cabeçalho: Ordem, Nome e Posto */}
+                    <div className="flex items-start gap-2 mb-2">
+                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+                        {index + 1}
+                      </div>
+                      <div className="flex-1">
+                        <div className="font-semibold text-gray-900 text-sm">
+                          {integrante.nome}
+                          {integrante.posto_graduacao && (
+                            <span className="ml-2 text-xs text-gray-600 font-normal">
+                              ({integrante.posto_graduacao})
+                            </span>
+                          )}
+                        </div>
+                        {integrante.funcao && (
+                          <div className="text-xs text-blue-700 font-medium mt-0.5">
+                            {integrante.funcao}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Informações de Contato */}
+                    {integrante.telefone && (
+                      <div className="flex items-center gap-1.5 text-xs text-gray-700 mt-2">
+                        <Phone className="w-3 h-3 text-gray-500" />
+                        <span>{integrante.telefone}</span>
+                      </div>
+                    )}
+
+                    {/* Cursos/Especializações */}
+                    {integrante.cursos && integrante.cursos.length > 0 && (
+                      <div className="mt-2">
+                        <div className="flex flex-wrap gap-1">
+                          {integrante.cursos.map((curso: string, idx: number) => (
+                            <Badge 
+                              key={idx} 
+                              variant="outline" 
+                              className="text-xs bg-white border-blue-300 text-blue-800"
+                            >
+                              {curso}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-6 bg-gray-50 rounded-lg border border-dashed border-gray-300">
+                <User className="w-8 h-8 mx-auto text-gray-400 mb-2" />
+                <p className="text-sm text-gray-500">
+                  Nenhum integrante cadastrado para esta viatura
+                </p>
+                <p className="text-xs text-gray-400 mt-1">
+                  Adicione membros da equipe para melhor rastreamento
+                </p>
+              </div>
+            )}
           </div>
 
           <Separator />
