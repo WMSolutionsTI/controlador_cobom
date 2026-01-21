@@ -282,9 +282,9 @@ const Index = () => {
 
       {/* Título do Grupamento - sempre visível abaixo do painel */}
       {grupamentoSelecionado && grupamentos.length > 0 && (
-        <div className="fixed top-0 left-0 right-0 z-40 pt-2">
-          <div className="bg-red-800 text-white text-center py-4 shadow-lg mt-2">
-            <div className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-wide">
+        <div className="fixed top-0 left-0 right-0 z-40 pt-1">
+          <div className="bg-red-800 text-white text-center py-0 shadow-lg mt-0">
+            <div className="text-2xl sm:text-3xl lg:text-3xl xl:text-4xl font-bold tracking-wide">
               {obterNomeGrupamentoCompleto(
                 grupamentos.find(g => g.id === grupamentoSelecionado)?.nome || ''
               )}
@@ -293,7 +293,7 @@ const Index = () => {
         </div>
       )}
 
-      <div className="container mx-auto px-4 py-2 space-y-2 pt-28 sm:pt-30 lg:pt-32">
+      <div className="container mx-auto px-0 py-0 space-y-1 pt-1 sm:pt-20 lg:pt-12">
         <AnotacoesServicoDaily 
           grupamentoSelecionado={grupamentoSelecionado} 
           controladorSelecionado={controladorSelecionado}

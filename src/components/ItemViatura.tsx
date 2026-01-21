@@ -117,12 +117,11 @@ export const ItemViatura = ({
         onClick={() => onVehicleClick(vehicle)}
       >
         {/* Ícone da modalidade com efeito 3D - metade para fora - maior e mais largo */}
-        <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 z-20">
-          <div className="w-12 h-10 bg-white rounded-lg shadow-lg border-2 border-gray-200 flex items-center justify-center hover:shadow-xl transition-shadow duration-300">
-            <img 
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+          <div className="w-auto h-auto flex items-center justify-center"> <img 
               src={vehicle.modalidade.icone_url} 
               alt={vehicle.modalidade.nome}
-              className="w-7 h-7 object-contain"
+              className="w-14 h-10 object-contain"
               style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
             />
           </div>
