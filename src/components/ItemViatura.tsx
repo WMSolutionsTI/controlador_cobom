@@ -76,6 +76,47 @@ export const ItemViatura = ({
     }
   };
 
+  const getPrefixoTextColor = (status: string) => {
+    switch (status) {
+      case 'DISPONÍVEL': return 'text-emerald-700';
+      case 'QTI': return 'text-amber-700';
+      case 'LOCAL': return 'text-blue-700';
+      case 'QTI PS': return 'text-orange-700';
+      case 'REGRESSO': return 'text-purple-700';
+      case 'BAIXADO': return 'text-red-700';
+      case 'RESERVA': return 'text-slate-700';
+      default: return 'text-gray-700';
+    }
+  };
+
+  const getIconeModalidadeStatus = (modalidadeNome: string, status: string) => {
+    // Normalizar nome da modalidade para slug
+    const modalidadeSlug = modalidadeNome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/\s+/g, '-'); // Substitui espaços por hífen
+    
+    // Normalizar status
+    const statusSlug = status
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    
+    // Caminho do ícone: /icons/vehicles/{modalidade}/{status}.png
+    const iconePath = `/icons/vehicles/${modalidadeSlug}/${statusSlug}.png`;
+    
+    // Fallback: se não existir ícone específico, usa o padrão da modalidade
+    return iconePath;
+  };
+  
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    // Fallback para ícone padrão da modalidade se não encontrar o específico
+    const img = e.target as HTMLImageElement;
+    if (!img.src.includes('fallback')) {
+      img.src = vehicle.modalidade.icone_url;
+    }
+  };
+
   const statusSequence = [
     'DISPONÍVEL',
     'QTI',
@@ -118,11 +159,13 @@ export const ItemViatura = ({
       >
         {/* Ícone da modalidade com efeito 3D - metade para fora - maior e mais largo */}
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-          <div className="w-auto h-auto flex items-center justify-center"> <img 
-              src={vehicle.modalidade.icone_url} 
-              alt={vehicle.modalidade.nome}
-              className="w-14 h-10 object-contain"
+          <div className="w-auto h-auto flex items-center justify-center">
+            <img 
+              src={getIconeModalidadeStatus(vehicle.modalidade.nome, vehicle.status)} 
+              alt={`${vehicle.modalidade.nome} - ${vehicle.status}`}
+              className="w-14 h-10 object-contain transition-all duration-300"
               style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
+              onError={handleImageError}
             />
           </div>
         </div>
@@ -133,7 +176,7 @@ export const ItemViatura = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  className="text-lg font-black text-red-800 tracking-wide cursor-pointer whitespace-nowrap overflow-hidden leading-none"
+                  className={`text-lg font-black tracking-wide cursor-pointer whitespace-nowrap overflow-hidden leading-none transition-colors duration-300 ${getPrefixoTextColor(vehicle.status)}`}
                   style={{
                     textShadow: '2px 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.8)',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
