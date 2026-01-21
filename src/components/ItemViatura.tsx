@@ -1,4 +1,5 @@
 
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -76,6 +77,90 @@ export const ItemViatura = ({
     }
   };
 
+  const getPrefixoTextColor = (status: string) => {
+    switch (status) {
+      case 'DISPONÍVEL': return 'text-emerald-700';
+      case 'QTI': return 'text-amber-700';
+      case 'LOCAL': return 'text-blue-700';
+      case 'QTI PS': return 'text-orange-700';
+      case 'REGRESSO': return 'text-purple-700';
+      case 'BAIXADO': return 'text-red-700';
+      case 'RESERVA': return 'text-slate-700';
+      default: return 'text-gray-700';
+    }
+  };
+
+  const getIconeModalidadeStatus = (modalidadeNome: string, status: string) => {
+    // Normalizar nome da modalidade para slug
+    const modalidadeSlug = modalidadeNome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/\s+/g, '-'); // Substitui espaços por hífen
+    
+    // Normalizar status
+    const statusSlug = status
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    
+    // Caminho do ícone: /icons/vehicles/{modalidade}/{status}.png
+    const iconePath = `/icons/vehicles/${modalidadeSlug}/${statusSlug}.png`;
+    
+    return iconePath;
+  };
+  
+  /**
+   * Normaliza uma URL removendo query parameters e fragments
+   * @param url - URL para normalizar (relativa ou absoluta)
+   * @returns URL normalizada sem query params ou fragments
+   */
+  const normalizeUrl = (url: string): string => {
+    try {
+      // Se for URL absoluta, apenas remove query params e fragments
+      if (url.includes('://')) {
+        return url.split('?')[0].split('#')[0];
+      }
+      // Se for relativa, converte para absoluta primeiro
+      return new URL(url, window.location.origin).href.split('?')[0].split('#')[0];
+    } catch {
+      // Em caso de erro, retorna a URL original sem modificações
+      return url;
+    }
+  };
+  
+  /**
+   * Manipulador de erro de carregamento de imagem com fallback inteligente
+   * Previne loop infinito ao verificar se já está usando o ícone padrão
+   * Normaliza URLs antes da comparação para lidar com query params e fragments
+   * @param e - Evento de erro da imagem
+   */
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.target as HTMLImageElement;
+    const defaultIconUrl = vehicle.modalidade.icone_url;
+    
+    try {
+      // Normaliza ambas URLs para comparação confiável
+      const currentUrl = normalizeUrl(img.src);
+      const fallbackUrl = normalizeUrl(defaultIconUrl);
+      
+      // Só aplica fallback se ainda não estiver usando o ícone padrão
+      if (currentUrl !== fallbackUrl) {
+        img.src = defaultIconUrl;
+      }
+    } catch {
+      // Se houver erro ao normalizar, compara URLs diretamente como fallback
+      if (img.src !== defaultIconUrl) {
+        img.src = defaultIconUrl;
+      }
+    }
+  };
+
+  // Memoiza o caminho do ícone para evitar recalcular em cada render
+  const iconUrl = useMemo(
+    () => getIconeModalidadeStatus(vehicle.modalidade.nome, vehicle.status),
+    [vehicle.modalidade.nome, vehicle.status]
+  );
+
   const statusSequence = [
     'DISPONÍVEL',
     'QTI',
@@ -118,11 +203,13 @@ export const ItemViatura = ({
       >
         {/* Ícone da modalidade com efeito 3D - metade para fora - maior e mais largo */}
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-          <div className="w-auto h-auto flex items-center justify-center"> <img 
-              src={vehicle.modalidade.icone_url} 
-              alt={vehicle.modalidade.nome}
-              className="w-14 h-10 object-contain"
+          <div className="w-auto h-auto flex items-center justify-center">
+            <img 
+              src={iconUrl} 
+              alt={`${vehicle.modalidade.nome} - ${vehicle.status}`}
+              className="w-14 h-10 object-contain transition-all duration-300"
               style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
+              onError={handleImageError}
             />
           </div>
         </div>
@@ -133,7 +220,7 @@ export const ItemViatura = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <div 
-                  className="text-lg font-black text-red-800 tracking-wide cursor-pointer whitespace-nowrap overflow-hidden leading-none"
+                  className={`text-lg font-black tracking-wide cursor-pointer whitespace-nowrap overflow-hidden leading-none transition-colors duration-300 ${getPrefixoTextColor(vehicle.status)}`}
                   style={{
                     textShadow: '2px 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.8)',
                     filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
