@@ -114,7 +114,8 @@ export const ItemViatura = ({
     const defaultIconUrl = vehicle.modalidade.icone_url;
     
     // Evita loop infinito: só faz fallback se ainda não estiver usando o ícone padrão
-    if (img.src !== defaultIconUrl) {
+    // Usa endsWith para comparar já que o browser converte URLs relativas em absolutas
+    if (!img.src.endsWith(defaultIconUrl)) {
       img.src = defaultIconUrl;
     }
   };
