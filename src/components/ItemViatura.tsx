@@ -113,15 +113,23 @@ export const ItemViatura = ({
     const img = e.target as HTMLImageElement;
     const defaultIconUrl = vehicle.modalidade.icone_url;
     
-    // Evita loop infinito: só faz fallback se ainda não estiver usando o ícone padrão
-    // Normaliza URLs para comparação (remove query params e fragments)
-    const currentUrl = img.src.split('?')[0].split('#')[0];
-    const fallbackUrl = defaultIconUrl.includes('://') 
-      ? defaultIconUrl.split('?')[0].split('#')[0]
-      : new URL(defaultIconUrl, window.location.origin).href.split('?')[0].split('#')[0];
-    
-    if (currentUrl !== fallbackUrl) {
-      img.src = defaultIconUrl;
+    try {
+      // Evita loop infinito: só faz fallback se ainda não estiver usando o ícone padrão
+      // Normaliza URLs para comparação (remove query params e fragments)
+      const currentUrl = img.src.split('?')[0].split('#')[0];
+      const fallbackUrl = defaultIconUrl.includes('://') 
+        ? defaultIconUrl.split('?')[0].split('#')[0]
+        : new URL(defaultIconUrl, window.location.origin).href.split('?')[0].split('#')[0];
+      
+      if (currentUrl !== fallbackUrl) {
+        img.src = defaultIconUrl;
+      }
+    } catch {
+      // Se houver erro ao normalizar URLs, tenta o fallback de qualquer forma
+      // mas apenas se a URL atual não for exatamente a URL de fallback
+      if (img.src !== defaultIconUrl) {
+        img.src = defaultIconUrl;
+      }
     }
   };
 
