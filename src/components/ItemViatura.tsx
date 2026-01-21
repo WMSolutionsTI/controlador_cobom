@@ -1,4 +1,5 @@
 
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -154,6 +155,12 @@ export const ItemViatura = ({
     }
   };
 
+  // Memoiza o caminho do ícone para evitar recalcular em cada render
+  const iconUrl = useMemo(
+    () => getIconeModalidadeStatus(vehicle.modalidade.nome, vehicle.status),
+    [vehicle.modalidade.nome, vehicle.status]
+  );
+
   const statusSequence = [
     'DISPONÍVEL',
     'QTI',
@@ -198,7 +205,7 @@ export const ItemViatura = ({
         <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
           <div className="w-auto h-auto flex items-center justify-center">
             <img 
-              src={getIconeModalidadeStatus(vehicle.modalidade.nome, vehicle.status)} 
+              src={iconUrl} 
               alt={`${vehicle.modalidade.nome} - ${vehicle.status}`}
               className="w-14 h-10 object-contain transition-all duration-300"
               style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
