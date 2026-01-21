@@ -18,6 +18,7 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
   const [registroId, setRegistroId] = useState<string | null>(null);
   const [estaRecolhido, setEstaRecolhido] = useState(true);
   const { toast } = useToast();
+  const [nomeControlador, setNomeControlador] = useState<string>('');
 
   const dataHoje = new Date().toLocaleDateString('pt-BR');
 
@@ -90,12 +91,6 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
     return () => clearTimeout(timeoutId);
   }, [anotacoes, salvarAnotacoes]);
 
-  useEffect(() => {
-    if (grupamentoSelecionado) {
-      carregarAnotacoes();
-    }
-  }, [grupamentoSelecionado]);
-
   const carregarAnotacoes = async () => {
     if (!grupamentoSelecionado) return;
 
@@ -131,19 +126,51 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
     }
   };
 
+  const carregarNomeControlador = useCallback(async () => {
+    if (!controladorSelecionado) {
+      setNomeControlador('');
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase
+        .from('controladores')
+        .select('nome')
+        .eq('id', controladorSelecionado)
+        .single();
+
+      if (error) throw error;
+      setNomeControlador(data.nome);
+    } catch (error) {
+      console.error('Erro ao carregar nome do controlador:', error);
+      setNomeControlador('');
+    }
+  }, [controladorSelecionado]);
+
+  useEffect(() => {
+    if (grupamentoSelecionado) {
+      carregarAnotacoes();
+    }
+  }, [grupamentoSelecionado]);
+
+  useEffect(() => {
+    carregarNomeControlador();
+  }, [carregarNomeControlador]);
+
   if (!grupamentoSelecionado) {
     return (
       <Card className="border-red-200 shadow-lg">
         <Collapsible open={!estaRecolhido} onOpenChange={(open) => setEstaRecolhido(!open)}>
           <CardHeader className="bg-red-50 border-b border-red-200 py-2">
             <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-red-100 rounded p-1 transition-colors">
-              <div className="flex items-center gap-3">
-                <CardTitle className="text-red-800 text-sm">Anotações do Serviço - {dataHoje}</CardTitle>
+              <CardTitle className="text-red-800 text-sm">Anotações do Serviço - {dataHoje}</CardTitle>
+              
+              <div className="flex items-center gap-2">
                 <div className={`px-3 py-1 rounded-md font-bold text-xs shadow-sm ${obterEstiloProntidao()}`}>
                   PRONTIDÃO: {corProntidao.toUpperCase()}
                 </div>
+                {estaRecolhido ? <ChevronDown className="w-4 h-4 text-red-600" /> : <ChevronUp className="w-4 h-4 text-red-600" />}
               </div>
-              {estaRecolhido ? <ChevronDown className="w-4 h-4 text-red-600" /> : <ChevronUp className="w-4 h-4 text-red-600" />}
             </CollapsibleTrigger>
           </CardHeader>
           <CollapsibleContent>
@@ -164,13 +191,14 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
         <Collapsible open={!estaRecolhido} onOpenChange={(open) => setEstaRecolhido(!open)}>
           <CardHeader className="bg-red-50 border-b border-red-200 py-2">
             <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-red-100 rounded p-1 transition-colors">
-              <div className="flex items-center gap-3">
-                <CardTitle className="text-red-800 text-sm">Anotações do Serviço - {dataHoje}</CardTitle>
+              <CardTitle className="text-red-800 text-sm">Anotações do Serviço - {dataHoje}</CardTitle>
+              
+              <div className="flex items-center gap-2">
                 <div className={`px-3 py-1 rounded-md font-bold text-xs shadow-sm ${obterEstiloProntidao()}`}>
                   PRONTIDÃO: {corProntidao.toUpperCase()}
                 </div>
+                {estaRecolhido ? <ChevronDown className="w-4 h-4 text-red-600" /> : <ChevronUp className="w-4 h-4 text-red-600" />}
               </div>
-              {estaRecolhido ? <ChevronDown className="w-4 h-4 text-red-600" /> : <ChevronUp className="w-4 h-4 text-red-600" />}
             </CollapsibleTrigger>
           </CardHeader>
           <CollapsibleContent>
@@ -188,18 +216,23 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
       <Collapsible open={!estaRecolhido} onOpenChange={(open) => setEstaRecolhido(!open)}>
         <CardHeader className="bg-red-50 border-b border-red-200 py-2">
           <CollapsibleTrigger className="flex items-center justify-between w-full hover:bg-red-100 rounded p-1 transition-colors">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <CardTitle className="text-red-800 text-sm">
                 Anotações do Serviço - {dataHoje}
-                <span className="text-xs text-gray-600 ml-2 font-normal">
-                  (Salvamento automático ativado)
-                </span>
               </CardTitle>
+              {nomeControlador && (
+                <span className="text-xs text-gray-700 font-semibold bg-gray-100 px-2 py-1 rounded border border-gray-300">
+                  CONTROLADOR: {nomeControlador}
+                </span>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-2">
               <div className={`px-3 py-1 rounded-md font-bold text-xs shadow-sm ${obterEstiloProntidao()}`}>
                 PRONTIDÃO: {corProntidao.toUpperCase()}
               </div>
+              {estaRecolhido ? <ChevronDown className="w-4 h-4 text-red-600" /> : <ChevronUp className="w-4 h-4 text-red-600" />}
             </div>
-            {estaRecolhido ? <ChevronDown className="w-4 h-4 text-red-600" /> : <ChevronUp className="w-4 h-4 text-red-600" />}
           </CollapsibleTrigger>
         </CardHeader>
         <CollapsibleContent>
