@@ -8,7 +8,7 @@ import { SeletorControlador } from '@/components/SeletorControlador';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Shield, Search, Car, RefreshCw, FileText } from 'lucide-react';
+import { Plus, Shield, Search, Car, RefreshCw, FileText, X } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Grupamento {
@@ -27,6 +27,7 @@ const Index = () => {
   const [termoPesquisa, setTermoPesquisa] = useState<string>('');
   const [corProntidao, setCorProntidao] = useState<'verde' | 'amarela' | 'azul'>('verde');
   const [refreshKey, setRefreshKey] = useState(0);
+  const [painelAberto, setPainelAberto] = useState(false);
 
   useEffect(() => {
     carregarGrupamentos();
@@ -84,9 +85,31 @@ const Index = () => {
       {/* Painel Retrátil no Topo */}
       <div className="fixed top-0 left-0 right-0 z-50">
         {/* Área invisível para detectar hover no topo da tela */}
-        <div className="h-2 w-full absolute top-0 group">
+        <div 
+          className="h-2 w-full absolute top-0"
+          onMouseEnter={() => setPainelAberto(true)}
+        >
           {/* Painel de Controles - oculto por padrão, aparece no hover */}
-          <div className="bg-red-700 text-white shadow-lg transform -translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out">
+          <div 
+            className={`bg-red-700 text-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+              painelAberto ? 'translate-y-0' : '-translate-y-full'
+            }`}
+            onMouseLeave={(e) => {
+              // Não fechar se estiver sobre um menu dropdown aberto
+              const isOverDropdown = document.querySelector('[role="listbox"]');
+              if (!isOverDropdown) {
+                setPainelAberto(false);
+              }
+            }}
+          >
+            {/* Botão de fechar opcional */}
+            <button
+              onClick={() => setPainelAberto(false)}
+              className="absolute top-2 right-2 text-white hover:text-gray-200 z-10"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            
             <div className="container mx-auto px-2 sm:px-4 py-2 sm:py-3">
               {/* Layout Mobile - Stack vertical */}
               <div className="flex flex-col gap-3 lg:hidden">
@@ -110,7 +133,17 @@ const Index = () => {
                 <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
                   {grupamentos.length > 0 && (
                     <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-1.5 shadow-md border border-blue-200 flex-1">
-                      <Select value={grupamentoSelecionado} onValueChange={setGrupamentoSelecionado}>
+                      <Select 
+                        value={grupamentoSelecionado} 
+                        onValueChange={(value) => {
+                          setGrupamentoSelecionado(value);
+                          // Permite fechar painel após seleção
+                          setTimeout(() => setPainelAberto(false), 300);
+                        }}
+                        onOpenChange={(open) => {
+                          if (open) setPainelAberto(true);
+                        }}
+                      >
                         <SelectTrigger className="w-full text-gray-900 h-8 bg-white border-blue-300 hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-sm font-medium text-xs sm:text-sm">
                           <SelectValue placeholder="Selecione um grupamento" />
                         </SelectTrigger>
@@ -133,7 +166,14 @@ const Index = () => {
                     <SeletorControlador
                       grupamentoSelecionado={grupamentoSelecionado}
                       controladorSelecionado={controladorSelecionado}
-                      aoMudarControlador={setControladorSelecionado}
+                      aoMudarControlador={(value) => {
+                        setControladorSelecionado(value);
+                        // Permite fechar painel após seleção
+                        setTimeout(() => setPainelAberto(false), 300);
+                      }}
+                      onOpenChange={(open) => {
+                        if (open) setPainelAberto(true);
+                      }}
                     />
                   </div>
                 </div>
@@ -203,7 +243,17 @@ const Index = () => {
                   {/* Seletor de Grupamento */}
                   {grupamentos.length > 0 && (
                     <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-1.5 shadow-md border border-blue-200">
-                      <Select value={grupamentoSelecionado} onValueChange={setGrupamentoSelecionado}>
+                      <Select 
+                        value={grupamentoSelecionado} 
+                        onValueChange={(value) => {
+                          setGrupamentoSelecionado(value);
+                          // Permite fechar painel após seleção
+                          setTimeout(() => setPainelAberto(false), 300);
+                        }}
+                        onOpenChange={(open) => {
+                          if (open) setPainelAberto(true);
+                        }}
+                      >
                         <SelectTrigger className="w-48 xl:w-56 text-gray-900 h-8 bg-white border-blue-300 hover:border-blue-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 shadow-sm font-medium text-sm">
                           <SelectValue placeholder="Selecione um grupamento" />
                         </SelectTrigger>
@@ -227,7 +277,14 @@ const Index = () => {
                     <SeletorControlador
                       grupamentoSelecionado={grupamentoSelecionado}
                       controladorSelecionado={controladorSelecionado}
-                      aoMudarControlador={setControladorSelecionado}
+                      aoMudarControlador={(value) => {
+                        setControladorSelecionado(value);
+                        // Permite fechar painel após seleção
+                        setTimeout(() => setPainelAberto(false), 300);
+                      }}
+                      onOpenChange={(open) => {
+                        if (open) setPainelAberto(true);
+                      }}
                     />
                   </div>
                   

@@ -98,9 +98,9 @@ export const ItemViatura = ({
 
   // Calcular largura baseada no comprimento do prefixo
   const getCardWidth = (prefixo: string) => {
-    const baseWidth = 120;
-    const extraWidth = Math.max(0, (prefixo.length - 4) * 8);
-    return Math.min(baseWidth + extraWidth, 180);
+    const baseWidth = 160;
+    const extraWidth = Math.max(0, (prefixo.length - 4) * 10);
+    return Math.min(baseWidth + extraWidth, 220);
   };
 
   const cardWidth = getCardWidth(vehicle.prefixo);
@@ -128,7 +128,7 @@ export const ItemViatura = ({
           </div>
         </div>
 
-        <div className="p-2 space-y-0.5 relative pt-6">
+        <div className="p-2 space-y-1 relative pt-6">
           {/* Prefixo com tooltip para informações da equipe - fonte reduzida */}
           <div className="text-center relative z-10 mt-0">
             <Tooltip>
@@ -199,7 +199,13 @@ export const ItemViatura = ({
 
           {/* Observação */}
           {vehicleObservation && (
-            <div className="text-xs text-gray-600 bg-yellow-50 p-1 rounded border-l-2 border-yellow-400 truncate relative z-10">
+            <div className="text-xs text-gray-600 bg-yellow-50 p-1 rounded border-l-2 border-yellow-400 truncate relative z-10"
+                 style={{ 
+                   maxWidth: '100%',
+                   overflow: 'hidden',
+                   textOverflow: 'ellipsis',
+                   whiteSpace: 'nowrap'
+                 }}>
               {vehicleObservation}
             </div>
           )}

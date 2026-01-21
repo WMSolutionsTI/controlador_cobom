@@ -15,12 +15,14 @@ interface SeletorControladorProps {
   grupamentoSelecionado: string;
   controladorSelecionado: string;
   aoMudarControlador: (controladorId: string) => void;
+  onOpenChange?: (open: boolean) => void;
 }
 
 export const SeletorControlador = ({ 
   grupamentoSelecionado, 
   controladorSelecionado, 
-  aoMudarControlador 
+  aoMudarControlador,
+  onOpenChange
 }: SeletorControladorProps) => {
   const [controladores, setControladores] = useState<Controlador[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
@@ -54,7 +56,11 @@ export const SeletorControlador = ({
     <>
       <div className="flex items-center gap-2">
         <div className="bg-white rounded-lg p-2">
-          <Select value={controladorSelecionado} onValueChange={aoMudarControlador}>
+          <Select 
+            value={controladorSelecionado} 
+            onValueChange={aoMudarControlador}
+            onOpenChange={onOpenChange}
+          >
             <SelectTrigger className="w-48 text-gray-900 h-8">
               <SelectValue placeholder="Selecione um controlador" />
             </SelectTrigger>
