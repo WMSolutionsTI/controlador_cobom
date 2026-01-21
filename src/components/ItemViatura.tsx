@@ -114,8 +114,13 @@ export const ItemViatura = ({
     const defaultIconUrl = vehicle.modalidade.icone_url;
     
     // Evita loop infinito: só faz fallback se ainda não estiver usando o ícone padrão
-    // Usa endsWith para comparar já que o browser converte URLs relativas em absolutas
-    if (!img.src.endsWith(defaultIconUrl)) {
+    // Normaliza URLs para comparação (remove query params e fragments)
+    const currentUrl = img.src.split('?')[0].split('#')[0];
+    const fallbackUrl = defaultIconUrl.includes('://') 
+      ? defaultIconUrl.split('?')[0].split('#')[0]
+      : new URL(defaultIconUrl, window.location.origin).href.split('?')[0].split('#')[0];
+    
+    if (currentUrl !== fallbackUrl) {
       img.src = defaultIconUrl;
     }
   };

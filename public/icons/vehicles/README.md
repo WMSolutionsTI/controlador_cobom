@@ -41,7 +41,9 @@ All icon files must follow the pattern:
 ## Image Specifications
 
 - **Format**: PNG with transparent background
-- **Size**: 112px (width) × 80px (height) or similar proportions
+- **Recommended Size**: 112px (width) × 80px (height)
+- **Aspect Ratio**: 1.4:1 (width:height) - maintain this ratio for consistency
+- **Acceptable Range**: Width 80-140px, Height 57-100px (maintaining 1.4:1 ratio)
 - **Orientation Guidelines**:
   - Available: Facing right (→)
   - Returning: Facing left (←)
