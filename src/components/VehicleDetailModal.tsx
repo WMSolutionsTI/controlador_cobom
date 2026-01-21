@@ -10,6 +10,9 @@ import { Label } from '@/components/ui/label';
 import { Trash2, Edit, Radio, Smartphone, User, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import type { Database } from '@/integrations/supabase/types';
+
+type IntegranteEquipe = Database['public']['Tables']['integrantes_equipe']['Row'];
 
 interface Vehicle {
   id: string;
@@ -46,7 +49,7 @@ export const VehicleDetailModal = ({
   const [qsaRadio, setQsaRadio] = useState<number | null>(null);
   const [qsaZello, setQsaZello] = useState<number | null>(null);
   const [isDejem, setIsDejem] = useState(false);
-  const [integrantesEquipe, setIntegrantesEquipe] = useState<any[]>([]);
+  const [integrantesEquipe, setIntegrantesEquipe] = useState<IntegranteEquipe[]>([]);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -483,7 +486,7 @@ export const VehicleDetailModal = ({
                         <div className="flex flex-wrap gap-1">
                           {integrante.cursos.map((curso: string, idx: number) => (
                             <Badge 
-                              key={idx} 
+                              key={`${integrante.id}-${curso}-${idx}`} 
                               variant="outline" 
                               className="text-xs bg-white border-blue-300 text-blue-800"
                             >
