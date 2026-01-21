@@ -108,25 +108,46 @@ export const ItemViatura = ({
     return iconePath;
   };
   
+  /**
+   * Normaliza uma URL removendo query parameters e fragments
+   * @param url - URL para normalizar (relativa ou absoluta)
+   * @returns URL normalizada sem query params ou fragments
+   */
+  const normalizeUrl = (url: string): string => {
+    try {
+      // Se for URL absoluta, apenas remove query params e fragments
+      if (url.includes('://')) {
+        return url.split('?')[0].split('#')[0];
+      }
+      // Se for relativa, converte para absoluta primeiro
+      return new URL(url, window.location.origin).href.split('?')[0].split('#')[0];
+    } catch {
+      // Em caso de erro, retorna a URL original sem modificações
+      return url;
+    }
+  };
+  
+  /**
+   * Manipulador de erro de carregamento de imagem com fallback inteligente
+   * Previne loop infinito ao verificar se já está usando o ícone padrão
+   * Normaliza URLs antes da comparação para lidar com query params e fragments
+   * @param e - Evento de erro da imagem
+   */
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    // Fallback para ícone padrão da modalidade se não encontrar o específico
     const img = e.target as HTMLImageElement;
     const defaultIconUrl = vehicle.modalidade.icone_url;
     
     try {
-      // Evita loop infinito: só faz fallback se ainda não estiver usando o ícone padrão
-      // Normaliza URLs para comparação (remove query params e fragments)
-      const currentUrl = img.src.split('?')[0].split('#')[0];
-      const fallbackUrl = defaultIconUrl.includes('://') 
-        ? defaultIconUrl.split('?')[0].split('#')[0]
-        : new URL(defaultIconUrl, window.location.origin).href.split('?')[0].split('#')[0];
+      // Normaliza ambas URLs para comparação confiável
+      const currentUrl = normalizeUrl(img.src);
+      const fallbackUrl = normalizeUrl(defaultIconUrl);
       
+      // Só aplica fallback se ainda não estiver usando o ícone padrão
       if (currentUrl !== fallbackUrl) {
         img.src = defaultIconUrl;
       }
     } catch {
-      // Se houver erro ao normalizar URLs, tenta o fallback de qualquer forma
-      // mas apenas se a URL atual não for exatamente a URL de fallback
+      // Se houver erro ao normalizar, compara URLs diretamente como fallback
       if (img.src !== defaultIconUrl) {
         img.src = defaultIconUrl;
       }
