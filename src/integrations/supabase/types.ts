@@ -156,6 +156,56 @@ export type Database = {
         }
         Relationships: []
       }
+      integrantes_equipe: {
+        Row: {
+          id: string
+          viatura_id: string
+          nome: string
+          telefone: string | null
+          posto_graduacao: string | null
+          cursos: string[] | null
+          funcao: string | null
+          ativo: boolean | null
+          ordem: number | null
+          criado_em: string | null
+          atualizado_em: string | null
+        }
+        Insert: {
+          id?: string
+          viatura_id: string
+          nome: string
+          telefone?: string | null
+          posto_graduacao?: string | null
+          cursos?: string[] | null
+          funcao?: string | null
+          ativo?: boolean | null
+          ordem?: number | null
+          criado_em?: string | null
+          atualizado_em?: string | null
+        }
+        Update: {
+          id?: string
+          viatura_id?: string
+          nome?: string
+          telefone?: string | null
+          posto_graduacao?: string | null
+          cursos?: string[] | null
+          funcao?: string | null
+          ativo?: boolean | null
+          ordem?: number | null
+          criado_em?: string | null
+          atualizado_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "integrantes_equipe_viatura_id_fkey"
+            columns: ["viatura_id"]
+            isOneToOne: false
+            referencedRelation: "viaturas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       logs_atividade: {
         Row: {
           acao: string
