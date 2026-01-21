@@ -91,16 +91,6 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
     return () => clearTimeout(timeoutId);
   }, [anotacoes, salvarAnotacoes]);
 
-  useEffect(() => {
-    if (grupamentoSelecionado) {
-      carregarAnotacoes();
-    }
-  }, [grupamentoSelecionado]);
-
-  useEffect(() => {
-    carregarNomeControlador();
-  }, [controladorSelecionado]);
-
   const carregarAnotacoes = async () => {
     if (!grupamentoSelecionado) return;
 
@@ -136,7 +126,7 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
     }
   };
 
-  const carregarNomeControlador = async () => {
+  const carregarNomeControlador = useCallback(async () => {
     if (!controladorSelecionado) {
       setNomeControlador('');
       return;
@@ -150,12 +140,22 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
         .single();
 
       if (error) throw error;
-      setNomeControlador(data?.nome || '');
+      setNomeControlador(data.nome);
     } catch (error) {
       console.error('Erro ao carregar nome do controlador:', error);
       setNomeControlador('');
     }
-  };
+  }, [controladorSelecionado]);
+
+  useEffect(() => {
+    if (grupamentoSelecionado) {
+      carregarAnotacoes();
+    }
+  }, [grupamentoSelecionado]);
+
+  useEffect(() => {
+    carregarNomeControlador();
+  }, [carregarNomeControlador]);
 
   if (!grupamentoSelecionado) {
     return (
