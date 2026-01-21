@@ -105,7 +105,6 @@ export const ItemViatura = ({
     // Caminho do ícone: /icons/vehicles/{modalidade}/{status}.png
     const iconePath = `/icons/vehicles/${modalidadeSlug}/${statusSlug}.png`;
     
-    // Fallback: se não existir ícone específico, usa o padrão da modalidade
     return iconePath;
   };
   
