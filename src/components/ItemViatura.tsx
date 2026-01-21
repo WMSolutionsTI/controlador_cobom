@@ -112,8 +112,11 @@ export const ItemViatura = ({
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     // Fallback para ícone padrão da modalidade se não encontrar o específico
     const img = e.target as HTMLImageElement;
-    if (!img.src.includes('fallback')) {
-      img.src = vehicle.modalidade.icone_url;
+    const defaultIconUrl = vehicle.modalidade.icone_url;
+    
+    // Evita loop infinito: só faz fallback se ainda não estiver usando o ícone padrão
+    if (img.src !== defaultIconUrl) {
+      img.src = defaultIconUrl;
     }
   };
 
