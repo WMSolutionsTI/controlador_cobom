@@ -1,6 +1,7 @@
 // Compatibility layer during migration from Drizzle to Supabase
 // The controle-viaturas module uses Supabase directly
 // Existing API routes still use this Drizzle connection temporarily
+// TODO: Migrate all API routes to Supabase and remove this file (Target: Q2 2026)
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
