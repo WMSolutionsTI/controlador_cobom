@@ -5,6 +5,7 @@ import { NextResponse } from "next/server";
 const appRouteMap: Record<string, string> = {
   "/apps/geoloc193": "geoloc193",
   "/apps/viaturas": "viaturas",
+  "/apps/controle-viaturas": "controle-viaturas",
   "/apps/contingencia": "contingencia",
   "/apps/chat": "chat",
   "/apps/headsets": "headsets",

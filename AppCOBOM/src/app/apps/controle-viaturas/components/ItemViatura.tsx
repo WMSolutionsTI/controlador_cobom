@@ -1,0 +1,302 @@
+
+import { useMemo } from 'react';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { DIcon } from '@/components/DIcon';
+import { Radio, Smartphone } from 'lucide-react';
+
+interface Viatura {
+  id: string;
+  prefixo: string;
+  status: string;
+  qsa_radio?: number;
+  qsa_zello?: number;
+  dejem?: boolean;
+  modalidade: {
+    nome: string;
+    icone_url: string;
+  };
+}
+
+interface ItemViaturaProps {
+  vehicle: Viatura;
+  onVehicleClick: (viatura: Viatura) => void;
+  onStatusUpdate: (vehicleId: string, status: string) => void;
+  vehicleObservation?: string;
+  integrantesEquipe?: Array<{
+    nome: string;
+    telefone: string;
+    cursos: string[];
+  }>;
+}
+
+export const ItemViatura = ({ 
+  vehicle, 
+  onVehicleClick, 
+  onStatusUpdate,
+  vehicleObservation,
+  integrantesEquipe = []
+}: ItemViaturaProps) => {
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'DISPONÍVEL': return 'bg-emerald-600 hover:bg-emerald-700';
+      case 'QTI': return 'bg-amber-500 hover:bg-amber-600';
+      case 'LOCAL': return 'bg-blue-600 hover:bg-blue-700';
+      case 'QTI PS': return 'bg-orange-600 hover:bg-orange-700';
+      case 'REGRESSO': return 'bg-purple-600 hover:bg-purple-700';
+      case 'BAIXADO': return 'bg-red-600 hover:bg-red-700';
+      case 'RESERVA': return 'bg-slate-600 hover:bg-slate-700';
+      default: return 'bg-gray-600 hover:bg-gray-700';
+    }
+  };
+
+  const getStatusBackgroundColor = (status: string) => {
+    switch (status) {
+      case 'DISPONÍVEL': return 'bg-emerald-50 border-emerald-300 shadow-emerald-100';
+      case 'QTI': return 'bg-amber-50 border-amber-300 shadow-amber-100';
+      case 'LOCAL': return 'bg-blue-50 border-blue-300 shadow-blue-100';
+      case 'QTI PS': return 'bg-orange-50 border-orange-300 shadow-orange-100';
+      case 'REGRESSO': return 'bg-purple-50 border-purple-300 shadow-purple-100';
+      case 'BAIXADO': return 'bg-red-50 border-red-300 shadow-red-100';
+      case 'RESERVA': return 'bg-slate-50 border-slate-300 shadow-slate-100';
+      default: return 'bg-white border-gray-300 shadow-gray-100';
+    }
+  };
+
+  const getQsaColor = (qsa?: number) => {
+    if (!qsa && qsa !== 0) return 'bg-gray-100 text-gray-600';
+    switch (qsa) {
+      case 0: return 'bg-red-500 text-white';
+      case 1: return 'bg-red-400 text-white';
+      case 2: return 'bg-orange-400 text-white';
+      case 3: return 'bg-yellow-400 text-white';
+      case 4: return 'bg-lime-400 text-white';
+      case 5: return 'bg-green-500 text-white';
+      default: return 'bg-gray-100 text-gray-600';
+    }
+  };
+
+  const getPrefixoTextColor = (status: string) => {
+    switch (status) {
+      case 'DISPONÍVEL': return 'text-emerald-700';
+      case 'QTI': return 'text-amber-700';
+      case 'LOCAL': return 'text-blue-700';
+      case 'QTI PS': return 'text-orange-700';
+      case 'REGRESSO': return 'text-purple-700';
+      case 'BAIXADO': return 'text-red-700';
+      case 'RESERVA': return 'text-slate-700';
+      default: return 'text-gray-700';
+    }
+  };
+
+  const getIconeModalidadeStatus = (modalidadeNome: string, status: string) => {
+    // Normalizar nome da modalidade para slug
+    const modalidadeSlug = modalidadeNome
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+      .replace(/\s+/g, '-'); // Substitui espaços por hífen
+    
+    // Normalizar status
+    const statusSlug = status
+      .toLowerCase()
+      .replace(/\s+/g, '-');
+    
+    // Caminho do ícone: /icons/vehicles/{modalidade}/{status}.png
+    const iconePath = `/icons/vehicles/${modalidadeSlug}/${statusSlug}.png`;
+    
+    return iconePath;
+  };
+  
+  /**
+   * Normaliza uma URL removendo query parameters e fragments
+   * @param url - URL para normalizar (relativa ou absoluta)
+   * @returns URL normalizada sem query params ou fragments
+   */
+  const normalizeUrl = (url: string): string => {
+    try {
+      // Se for URL absoluta, apenas remove query params e fragments
+      if (url.includes('://')) {
+        return url.split('?')[0].split('#')[0];
+      }
+      // Se for relativa, converte para absoluta primeiro
+      return new URL(url, window.location.origin).href.split('?')[0].split('#')[0];
+    } catch {
+      // Em caso de erro, retorna a URL original sem modificações
+      return url;
+    }
+  };
+  
+  /**
+   * Manipulador de erro de carregamento de imagem com fallback inteligente
+   * Previne loop infinito ao verificar se já está usando o ícone padrão
+   * Normaliza URLs antes da comparação para lidar com query params e fragments
+   * @param e - Evento de erro da imagem
+   */
+  const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const img = e.target as HTMLImageElement;
+    const defaultIconUrl = vehicle.modalidade.icone_url;
+    
+    try {
+      // Normaliza ambas URLs para comparação confiável
+      const currentUrl = normalizeUrl(img.src);
+      const fallbackUrl = normalizeUrl(defaultIconUrl);
+      
+      // Só aplica fallback se ainda não estiver usando o ícone padrão
+      if (currentUrl !== fallbackUrl) {
+        img.src = defaultIconUrl;
+      }
+    } catch {
+      // Se houver erro ao normalizar, compara URLs diretamente como fallback
+      if (img.src !== defaultIconUrl) {
+        img.src = defaultIconUrl;
+      }
+    }
+  };
+
+  // Memoiza o caminho do ícone para evitar recalcular em cada render
+  const iconUrl = useMemo(
+    () => getIconeModalidadeStatus(vehicle.modalidade.nome, vehicle.status),
+    [vehicle.modalidade.nome, vehicle.status]
+  );
+
+  const statusSequence = [
+    'DISPONÍVEL',
+    'QTI',
+    'LOCAL', 
+    'QTI PS',
+    'REGRESSO'
+  ];
+
+  const getNextStatus = (currentStatus: string) => {
+    const currentIndex = statusSequence.indexOf(currentStatus);
+    if (currentIndex === -1) return statusSequence[0];
+    return statusSequence[(currentIndex + 1) % statusSequence.length];
+  };
+
+  const handleStatusClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const nextStatus = getNextStatus(vehicle.status);
+    onStatusUpdate(vehicle.id, nextStatus);
+  };
+
+  // Calcular largura baseada no comprimento do prefixo
+  const getCardWidth = (prefixo: string) => {
+    const baseWidth = 160;
+    const extraWidth = Math.max(0, (prefixo.length - 4) * 10);
+    return Math.min(baseWidth + extraWidth, 220);
+  };
+
+  const cardWidth = getCardWidth(vehicle.prefixo);
+
+  return (
+    <TooltipProvider>
+      <Card 
+        className={`relative group hover:shadow-2xl transition-all duration-300 cursor-pointer border-2 hover:border-blue-300 hover:scale-105 transform-gpu overflow-visible ${getStatusBackgroundColor(vehicle.status)}`}
+        style={{
+          minWidth: `${cardWidth}px`,
+          maxWidth: `${cardWidth}px`,
+          boxShadow: '0 4px 8px rgba(0,0,0,0.12), 0 2px 4px rgba(0,0,0,0.08)'
+        }}
+        onClick={() => onVehicleClick(vehicle)}
+      >
+        {/* Ícone da modalidade com efeito 3D - metade para fora - maior e mais largo */}
+        <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
+          <div className="w-auto h-auto flex items-center justify-center">
+            <img 
+              src={iconUrl} 
+              alt={`${vehicle.modalidade.nome} - ${vehicle.status}`}
+              className="w-14 h-10 object-contain transition-all duration-300"
+              style={{ filter: 'drop-shadow(0 1px 2px rgba(0,0,0,0.2))' }}
+              onError={handleImageError}
+            />
+          </div>
+        </div>
+
+        <div className="p-2 space-y-1 relative pt-6">
+          {/* Prefixo com tooltip para informações da equipe - fonte reduzida */}
+          <div className="text-center relative z-10 mt-0">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div 
+                  className={`text-lg font-black tracking-wide cursor-pointer whitespace-nowrap overflow-hidden leading-none transition-colors duration-300 ${getPrefixoTextColor(vehicle.status)}`}
+                  style={{
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.3), 0 1px 2px rgba(255,255,255,0.8)',
+                    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))',
+                    fontSize: '1.25rem'
+                  }}
+                >
+                  {vehicle.prefixo}
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="top" className="max-w-xs">
+                <div className="space-y-2">
+                  <div className="font-semibold text-sm">Equipe</div>
+                  {integrantesEquipe.length > 0 ? (
+                    integrantesEquipe.map((integrante, index) => (
+                      <div key={index} className="text-xs space-y-1">
+                        <div className="font-medium">{integrante.nome}</div>
+                        <div className="text-gray-600">{integrante.telefone}</div>
+                        <div className="text-gray-500">{integrante.cursos.join(', ')}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-xs text-gray-500">Nenhum integrante atribuído</div>
+                  )}
+                </div>
+              </TooltipContent>
+            </Tooltip>
+          </div>
+
+          {/* Status e indicadores em linha única */}
+          <div className="relative z-10">
+            <div className="flex items-center justify-between gap-1">
+              <div className="flex items-center gap-1">
+                {vehicle.dejem && (
+                  <DIcon className="w-4 h-4" />
+                )}
+                <Button
+                  className={`h-6 text-xs font-bold text-white border-0 ${getStatusColor(vehicle.status)} hover:opacity-90 shadow-lg`}
+                  style={{ minWidth: '60px', fontSize: '9px' }}
+                  onClick={handleStatusClick}
+                >
+                  {vehicle.status}
+                </Button>
+              </div>
+              
+              {/* QSA Indicators ao lado direito do status */}
+              <div className="flex items-center gap-1">
+                {(vehicle.qsa_radio || vehicle.qsa_radio === 0) && (
+                  <div className={`flex items-center gap-0.5 text-xs px-1 py-0.5 rounded shadow-sm ${getQsaColor(vehicle.qsa_radio)}`}>
+                    <Radio className="w-2.5 h-2.5" />
+                    <span className="font-bold text-xs">{vehicle.qsa_radio}</span>
+                  </div>
+                )}
+                {(vehicle.qsa_zello || vehicle.qsa_zello === 0) && (
+                  <div className={`flex items-center gap-0.5 text-xs px-1 py-0.5 rounded shadow-sm ${getQsaColor(vehicle.qsa_zello)}`}>
+                    <Smartphone className="w-2.5 h-2.5" />
+                    <span className="font-bold text-xs">{vehicle.qsa_zello}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Observação */}
+          {vehicleObservation && (
+            <div className="text-xs text-gray-600 bg-yellow-50 p-1 rounded border-l-2 border-yellow-400 truncate relative z-10"
+                 style={{ 
+                   maxWidth: '100%',
+                   overflow: 'hidden',
+                   textOverflow: 'ellipsis',
+                   whiteSpace: 'nowrap'
+                 }}>
+              {vehicleObservation}
+            </div>
+          )}
+        </div>
+      </Card>
+    </TooltipProvider>
+  );
+};
