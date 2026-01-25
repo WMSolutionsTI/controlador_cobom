@@ -1,1 +1,0 @@
-ALTER TABLE "solicitacoes" ADD COLUMN "push_subscription" json;
