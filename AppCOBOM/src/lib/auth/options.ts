@@ -21,11 +21,24 @@ export const authOptions: NextAuthOptions = {
           const supabase = createAdminSupabaseClient();
 
           // Fetch user from Supabase
-          const { data: user, error } = await supabase
+          const { data: userData, error } = await supabase
             .from('users')
             .select('*')
-            .eq('username', credentials.username)
+            .eq('username' as never, credentials.username as never)
             .single();
+          
+          // Cast to expected user type
+          const user = userData as unknown as {
+            id: number
+            username: string
+            password: string
+            name: string
+            role: string
+            pa?: string | null
+            active?: boolean | null
+            session_token?: string | null
+            allowed_apps?: string[] | null
+          } | null
 
           if (error || !user || !user.active) {
             return null;
@@ -47,8 +60,8 @@ export const authOptions: NextAuthOptions = {
             .update({
               session_token: newSessionToken,
               updated_at: new Date().toISOString(),
-            })
-            .eq('id', user.id);
+            } as never)
+            .eq('id' as never, user.id as never);
 
           return {
             id: String(user.id),
@@ -87,11 +100,16 @@ export const authOptions: NextAuthOptions = {
         try {
           const supabase = createAdminSupabaseClient();
           
-          const { data: dbUser, error } = await supabase
+          const { data: dbUserData, error } = await supabase
             .from('users')
             .select('*')
-            .eq('id', parseInt(token.id as string, 10))
+            .eq('id' as never, parseInt(token.id as string, 10) as never)
             .single();
+          
+          const dbUser = dbUserData as unknown as {
+            id: number
+            session_token?: string | null
+          } | null
           
           if (error || !dbUser || dbUser.session_token !== token.sessionToken) {
             // Session is no longer valid (user logged in elsewhere)

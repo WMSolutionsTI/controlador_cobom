@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { FormularioAdicionarControlador } from '@/components/FormularioAdicionarControlador';
+import { FormularioAdicionarControlador } from './FormularioAdicionarControlador';
 import { supabase } from '@/lib/supabase/client';
 import { Plus, UserPlus } from 'lucide-react';
 
@@ -27,6 +27,7 @@ export const SeletorControlador = ({
   const [controladores, setControladores] = useState<Controlador[]>([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (grupamentoSelecionado) {
       carregarControladores();

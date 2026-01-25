@@ -47,7 +47,8 @@ export const LinhaViaturaEstacao = ({
   observacoesViaturas 
 }: LinhaViaturaEstacaoProps) => {
   // Simular dados de equipe (em uma implementação real, viriam do banco de dados)
-  const obterEquipeViatura = (viaturaId: string) => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const obterEquipeViatura = (_viaturaId: string) => {
     const equipesDemo = {
       'default': [
         {

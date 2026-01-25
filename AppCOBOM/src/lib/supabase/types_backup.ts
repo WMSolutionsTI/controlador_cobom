@@ -387,48 +387,6 @@ export type Database = {
           },
         ]
       }
-      users: {
-        Row: {
-          id: number
-          username: string
-          password: string
-          name: string
-          role: string
-          pa: string | null
-          active: boolean | null
-          session_token: string | null
-          allowed_apps: Json | null
-          created_at: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          id?: number
-          username: string
-          password: string
-          name: string
-          role: string
-          pa?: string | null
-          active?: boolean | null
-          session_token?: string | null
-          allowed_apps?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          id?: number
-          username?: string
-          password?: string
-          name?: string
-          role?: string
-          pa?: string | null
-          active?: boolean | null
-          session_token?: string | null
-          allowed_apps?: Json | null
-          created_at?: string | null
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
     }
     Views: {
       [_ in never]: never

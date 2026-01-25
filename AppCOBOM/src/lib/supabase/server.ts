@@ -16,14 +16,14 @@ export const createServerSupabaseClient = () => {
         set(name: string, value: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value, ...options })
-          } catch (error) {
+          } catch {
             // Server Component
           }
         },
         remove(name: string, options: CookieOptions) {
           try {
             cookieStore.set({ name, value: '', ...options })
-          } catch (error) {
+          } catch {
             // Server Component
           }
         },
@@ -32,13 +32,17 @@ export const createServerSupabaseClient = () => {
   )
 }
 
-// Admin client (Service Role)
+// Admin client (Service Role) - doesn't need cookie handling
 export const createAdminSupabaseClient = () => {
   return createServerClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     {
-      cookies: {},
+      cookies: {
+        get: () => undefined,
+        set: () => {},
+        remove: () => {},
+      },
     }
   )
 }

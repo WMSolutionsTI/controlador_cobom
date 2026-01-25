@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { LinhaViaturaEstacao } from '@/components/LinhaViaturaEstacao';
-import { VehicleDetailModal } from '@/components/VehicleDetailModal';
-import { FormularioEditarViatura } from '@/components/FormularioEditarViatura';
-import { EstacaoDetailModal } from '@/components/EstacaoDetailModal';
+import { LinhaViaturaEstacao } from './LinhaViaturaEstacao';
+import { VehicleDetailModal } from './VehicleDetailModal';
+import { FormularioEditarViatura } from './FormularioEditarViatura';
+import { EstacaoDetailModal } from './EstacaoDetailModal';
 import { supabase } from '@/lib/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -66,6 +66,7 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
   const [observacoesViaturas, setObservacoesViaturas] = useState<Record<string, string>>({});
   const { toast } = useToast();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (grupamentoSelecionado) {
       carregarViaturas();
@@ -105,6 +106,7 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
     }
   }, [grupamentoSelecionado]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     carregarObservacoes();
   }, [viaturas]);
@@ -243,7 +245,7 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
     }
 
     try {
-      let dadosAtualizacao: any = {
+      const dadosAtualizacao: Record<string, unknown> = {
         status_alterado_em: new Date().toISOString(),
         atualizado_em: new Date().toISOString()
       };
@@ -293,7 +295,7 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
     }
   };
 
-  const aoExcluirViatura = async (viaturaId: string) => {
+  const aoExcluirViatura = async () => {
     carregarViaturas();
   };
 
@@ -366,13 +368,13 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
 
     acc[subgrupamentoId].estacoes[estacaoId].viaturas.push(viatura);
     return acc;
-  }, {} as Record<string, { nome: string; estacoes: Record<string, { dados: any; viaturas: Viatura[] }> }>);
+  }, {} as Record<string, { nome: string; estacoes: Record<string, { dados: { nome: string; [key: string]: unknown }; viaturas: Viatura[] }> }>);
 
   const subgrupamentosOrdenados = Object.keys(dadosAgrupados).sort((a, b) => {
     return dadosAgrupados[a].nome.localeCompare(dadosAgrupados[b].nome);
   });
 
-  const ordenarEstacoesPorNome = (estacoes: Record<string, { dados: any; viaturas: Viatura[] }>) => {
+  const ordenarEstacoesPorNome = (estacoes: Record<string, { dados: { nome: string; [key: string]: unknown }; viaturas: Viatura[] }>) => {
     return Object.entries(estacoes).sort(([, a], [, b]) => {
       return a.dados.nome.localeCompare(b.dados.nome);
     });
@@ -451,7 +453,7 @@ export const PainelFrota = ({ grupamentoSelecionado, controladorSelecionado, ter
                   return (
                     <div key={estacaoId}>
                       <LinhaViaturaEstacao
-                        estacao={dados as Estacao}
+                        estacao={dados as unknown as Estacao}
                         viaturas={viaturasOrdenadas}
                         aoClicarViatura={aoClicarViatura}
                         aoClicarEstacao={aoClicarEstacao}

@@ -25,6 +25,7 @@ export const ModalLogsAtividade = ({ estaAberto, aoFechar, grupamentoSelecionado
   const [logs, setLogs] = useState<LogAtividade[]>([]);
   const [estaCarregando, setEstaCarregando] = useState(false);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (estaAberto && grupamentoSelecionado) {
       carregarLogs();

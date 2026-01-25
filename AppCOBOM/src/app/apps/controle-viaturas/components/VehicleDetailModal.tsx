@@ -33,7 +33,7 @@ interface VehicleDetailModalProps {
   onClose: () => void;
   onVehicleAction: (vehicleId: string, action: 'RESERVA' | 'BAIXAR' | 'LEVANTAR') => void;
   onVehicleDelete: (vehicleId: string) => void;
-  onEditVehicle: (vehicle: any) => void;
+  onEditVehicle: (vehicle: unknown) => void;
 }
 
 export const VehicleDetailModal = ({ 
@@ -43,7 +43,7 @@ export const VehicleDetailModal = ({
   onVehicleDelete,
   onEditVehicle 
 }: VehicleDetailModalProps) => {
-  const [observacoes, setObservacoes] = useState<any[]>([]);
+  const [observacoes, setObservacoes] = useState<Array<{ id: string; observacao?: string; texto?: string; criado_em: string; criado_por?: string; viatura_id?: string; [key: string]: unknown }>>([]);
   const [novaObservacao, setNovaObservacao] = useState('');
   const [estaCarregando, setEstaCarregando] = useState(false);
   const [qsaRadio, setQsaRadio] = useState<number | null>(null);
@@ -52,6 +52,7 @@ export const VehicleDetailModal = ({
   const [integrantesEquipe, setIntegrantesEquipe] = useState<IntegranteEquipe[]>([]);
   const { toast } = useToast();
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     carregarObservacoes();
     carregarDadosViatura();

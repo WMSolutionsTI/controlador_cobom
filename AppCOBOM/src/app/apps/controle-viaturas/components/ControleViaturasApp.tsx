@@ -21,7 +21,7 @@ export function ControleViaturasApp() {
   const [controladorSelecionado, setControladorSelecionado] = useState<string>('')
   const [termoPesquisa, setTermoPesquisa] = useState<string>('')
   const [corProntidao, setCorProntidao] = useState<'verde' | 'amarela' | 'azul'>('verde')
-  const [refreshKey, setRefreshKey] = useState(0)
+  const refreshKey = 0 // Static value for now
 
   useEffect(() => {
     carregarGrupamentos()

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { DIcon } from '@/components/DIcon';
+import { DIcon } from './DIcon';
 import { Radio, Smartphone } from 'lucide-react';
 
 interface Viatura {

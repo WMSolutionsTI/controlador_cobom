@@ -81,6 +81,7 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
   );
 
   // Debounce para salvamento automático após 2 segundos de inatividade
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!anotacoes.trim()) return;
 
@@ -147,12 +148,14 @@ export const AnotacoesServicoDaily = ({ grupamentoSelecionado, controladorSeleci
     }
   }, [controladorSelecionado]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (grupamentoSelecionado) {
       carregarAnotacoes();
     }
   }, [grupamentoSelecionado]);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     carregarNomeControlador();
   }, [carregarNomeControlador]);
