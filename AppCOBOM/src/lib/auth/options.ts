@@ -1,9 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
-import { db } from "@/lib/db";
-import { users } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import { generateToken } from "@/lib/utils";
 
 export const authOptions: NextAuthOptions = {
@@ -20,11 +18,29 @@ export const authOptions: NextAuthOptions = {
         }
 
         try {
-          const user = await db.query.users.findFirst({
-            where: eq(users.username, credentials.username),
-          });
+          const supabase = createAdminSupabaseClient();
 
-          if (!user || !user.active) {
+          // Fetch user from Supabase
+          const { data: userData, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('username' as never, credentials.username as never)
+            .single();
+          
+          // Cast to expected user type
+          const user = userData as unknown as {
+            id: number
+            username: string
+            password: string
+            name: string
+            role: string
+            pa?: string | null
+            active?: boolean | null
+            session_token?: string | null
+            allowed_apps?: string[] | null
+          } | null
+
+          if (error || !user || !user.active) {
             return null;
           }
 
@@ -38,24 +54,21 @@ export const authOptions: NextAuthOptions = {
           // This invalidates any previous sessions for this user
           const newSessionToken = generateToken(32);
           
-          // Update session token using explicit column reference
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const updateData: Record<string, any> = {
-            sessionToken: newSessionToken,
-            updatedAt: new Date(),
-          };
-          
-          await db
-            .update(users)
-            .set(updateData)
-            .where(eq(users.id, user.id));
+          // Update session token
+          await supabase
+            .from('users')
+            .update({
+              session_token: newSessionToken,
+              updated_at: new Date().toISOString(),
+            } as never)
+            .eq('id' as never, user.id as never);
 
           return {
             id: String(user.id),
             name: user.name,
             role: user.role,
             pa: user.pa || "",
-            allowedApps: (user.allowedApps as string[]) || [],
+            allowedApps: (user.allowed_apps as string[]) || [],
             sessionToken: newSessionToken,
           };
         } catch (error) {
@@ -85,11 +98,20 @@ export const authOptions: NextAuthOptions = {
         
         // Validate session token is still valid (single session enforcement)
         try {
-          const dbUser = await db.query.users.findFirst({
-            where: eq(users.id, parseInt(token.id as string, 10)),
-          });
+          const supabase = createAdminSupabaseClient();
           
-          if (!dbUser || dbUser.sessionToken !== token.sessionToken) {
+          const { data: dbUserData, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id' as never, parseInt(token.id as string, 10) as never)
+            .single();
+          
+          const dbUser = dbUserData as unknown as {
+            id: number
+            session_token?: string | null
+          } | null
+          
+          if (error || !dbUser || dbUser.session_token !== token.sessionToken) {
             // Session is no longer valid (user logged in elsewhere)
             throw new Error("Session expired");
           }

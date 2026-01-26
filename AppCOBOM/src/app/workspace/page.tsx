@@ -18,6 +18,7 @@ import {
   Map,
   FileSearch,
   Loader2,
+  Truck,
 } from "lucide-react";
 
 // Available apps in the system
@@ -37,6 +38,14 @@ const allApps = [
     icon: Car,
     route: "/apps/viaturas",
     color: "bg-blue-500",
+  },
+  {
+    slug: "controle-viaturas",
+    name: "Controle de Viaturas COBOM",
+    description: "Sistema completo de controle e gestão de viaturas do COBOM",
+    icon: Truck,
+    route: "/apps/controle-viaturas",
+    color: "bg-red-600",
   },
   {
     slug: "contingencia",

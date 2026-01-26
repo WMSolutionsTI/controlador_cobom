@@ -1,24 +1,22 @@
+// Compatibility layer during migration from Drizzle to Supabase
+// The controle-viaturas module uses Supabase directly
+// Existing API routes still use this Drizzle connection temporarily
+// TODO: Migrate all API routes to Supabase and remove this file (Target: Q2 2026)
 import { drizzle } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 import * as schema from "./schema";
 
-// Create a PostgreSQL connection pool with reconnection logic
+// Create a PostgreSQL connection pool
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max: 20, // Maximum number of connections
-  idleTimeoutMillis: 30000, // Close idle connections after 30 seconds
-  connectionTimeoutMillis: 10000, // Timeout for new connections
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 10000,
 });
 
 // Handle pool errors
 pool.on("error", (err) => {
   console.error("Unexpected error on idle client", err);
-  process.exit(-1);
-});
-
-// Handle connection events
-pool.on("connect", () => {
-  console.log("Connected to PostgreSQL database");
 });
 
 export const db = drizzle(pool, { schema });
